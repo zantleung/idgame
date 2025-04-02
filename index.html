@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>成語配對遊戲</title>
+    <style>
+        body {
+            font-family: 'Microsoft JhengHei', Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .game-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            width: 90%;
+            max-width: 600px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        
+        .cover-container {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .cover-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .start-btn {
+            padding: 12px 30px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.3s;
+            margin-top: 20px;
+        }
+        
+        .start-btn:hover {
+            background-color: #45a049;
+        }
+        
+        .score-display {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #ff9800;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        
+        .question-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .image-container {
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .image-container img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+        }
+        
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .option-btn {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        .option-btn:hover {
+            background-color: #45a049;
+        }
+        
+        .hint-btn {
+            padding: 10px 15px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-bottom: 20px;
+            transition: background-color 0.3s;
+        }
+        
+        .hint-btn:hover {
+            background-color: #0b7dda;
+        }
+        
+        .hint-btn.playing {
+            background-color: #ff5722;
+        }
+        
+        .hint-btn.playing:hover {
+            background-color: #e64a19;
+        }
+        
+        .explanation-container {
+            display: none;
+            text-align: center;
+        }
+        
+        .explanation-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .explanation-score {
+            background-color: #ff9800;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        
+        .explanation-image {
+            max-width: 100%;
+            max-height: 200px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        
+        .explanation-text {
+            margin: 15px 0;
+            line-height: 1.6;
+        }
+        
+        .next-btn {
+            padding: 8px 16px;
+            background-color: #ff9800;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+            margin-left: 10px;
+        }
+        
+        .next-btn:hover {
+            background-color: #e68a00;
+        }
+        
+        .audio-btn {
+            padding: 8px 12px;
+            background-color: #9c27b0;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 10px 0;
+            transition: background-color 0.3s;
+        }
+        
+        .audio-btn:hover {
+            background-color: #7b1fa2;
+        }
+        
+        .audio-btn.playing {
+            background-color: #ff5722;
+        }
+        
+        .audio-btn.playing:hover {
+            background-color: #e64a19;
+        }
+        
+        .correct {
+            background-color: #8bc34a !important;
+        }
+        
+        .incorrect {
+            background-color: #f44336 !important;
+        }
+        
+        .result-container {
+            text-align: center;
+            display: none;
+        }
+        
+        .result-image {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 20px;
+        }
+        
+        .restart-btn {
+            padding: 12px 30px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.3s;
+            margin-top: 20px;
+        }
+        
+        .restart-btn:hover {
+            background-color: #45a049;
+        }
+        
+        .subtitle {
+            color: #673AB7;
+            font-size: 1.2em;
+            margin: 15px 0 10px;
+            font-weight: bold;
+            border-bottom: 2px solid #673AB7;
+            padding-bottom: 5px;
+        }
+        
+        .explanation-content {
+            text-align: left;
+            margin: 0 auto;
+            max-width: 90%;
+        }
+        
+        /* 新增影片連結樣式 */
+        .video-link {
+            color: #2196F3;
+            text-decoration: none;
+            font-weight: bold;
+            margin: 0 3px;
+            display: inline-block;
+            padding: 5px 10px;
+            background-color: #f0f7ff;
+            border-radius: 4px;
+            border: 1px solid #bbdefb;
+        }
+        
+        .video-link:hover {
+            text-decoration: underline;
+            color: #0b7dda;
+            background-color: #e3f2fd;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <!-- 封面頁面 -->
+        <div id="cover-screen" class="cover-container">
+            <h1>成語配對遊戲</h1>
+            <img class="cover-image" src="images/cover.jpg" alt="成語遊戲封面">
+            <p>考考你的成語知識！看圖猜成語，挑戰你的中文能力！</p>
+            <button id="start-btn" class="start-btn">開始遊戲</button>
+        </div>
+        
+        <!-- 問題頁面 -->
+        <div id="question-screen" style="display:none;">
+            <div class="score-display">得分: <span id="score">0</span>/<span id="total-questions">0</span></div>
+            <div class="question-container">
+                <h2>看圖猜成語</h2>
+            </div>
+            
+            <div class="image-container">
+                <img id="question-image" src="" alt="成語圖片">
+            </div>
+            
+            <button id="hint-btn" class="hint-btn">
+                <span class="hint-icon">🔊</span> 提示
+            </button>
+            
+            <div class="options-container" id="options-container">
+                <!-- 選項將由JavaScript動態生成 -->
+            </div>
+        </div>
+        
+        <!-- 解釋頁面 -->
+        <div id="explanation-screen" class="explanation-container">
+            <div class="explanation-top">
+                <div class="explanation-score">得分: <span id="explanation-score">0</span>/<span id="explanation-total">0</span></div>
+                <button id="next-btn" class="next-btn">下一題 &raquo;</button>
+            </div>
+            
+            <h2 id="correct-answer-title"></h2>
+            
+            <div class="image-container">
+                <img id="explanation-image" class="explanation-image" src="" alt="成語解釋圖片">
+            </div>
+            
+            <button id="explanation-audio-btn" class="audio-btn">
+                <span class="audio-icon">🔊</span> 聖經相關
+            </button>
+            
+            <div id="explanation-text" class="explanation-text">
+                <!-- 解釋文本將由JavaScript動態生成 -->
+            </div>
+        </div>
+        
+        <!-- 結果頁面 -->
+        <div id="result-screen" class="result-container">
+            <h1>遊戲結束！</h1>
+            <img class="result-image" src="images/result.jpg" alt="遊戲結果">
+            <h2>你的最終得分是: <span id="final-score">0</span>/<span id="final-total">0</span></h2>
+            <p id="result-message"></p>
+            <button id="restart-btn" class="restart-btn">再玩一次</button>
+        </div>
+    </div>
+
+    <script>
+        // 成語資料庫（已修正重複成語問題）
+        const idioms = [
+            {
+                image: "images/NT001.jpg",
+                correctAnswer: "重見天日",
+                explanationImage: "images/NT001_detail.jpg",
+                origin: "道成了肉身（約1:1-16）聖經分舊約與新約兩部分。新約開始時記載的就是道，即是神，並且說明神在世界開始時已存在，即是在有時間前已經存在！聖經舊約已表明自從人犯罪後，世人就被罪捆綁，活在黑暗中。因此，神以人的形像來到世上，為要照亮所有人的生命，讓人能重見天日，脫離罪的捆綁！",
+                explanationText: "成語「重見天日」本來指含冤者得到平反，後來普遍指被關閉的事物重新開放，或脫離黑暗，重見光明的意思。",
+                example: "神以人的形像來到世上，讓人能重見天日，脫離罪的捆綁！",
+                extraInfo: "https://youtu.be/RtaHcP0Ymco",
+                hintAudio: "soundeffects/NT001.mp3",
+                explanationAudio: "soundeffects/NT001_explanation.mp3",
+                correctAudio: "soundeffects/correct.mp3",
+                wrongAudio: "soundeffects/wrong.mp3"
+            },
+            {
+                image: "images/NT002.jpg",
+                correctAnswer: "鐵樹開花",
+                explanationImage: "images/NT002_detail.jpg",
+                origin: "老年得子（路1:5-25）耶穌出生前，有一個祭司叫撒迦利亞，他妻子叫伊利莎白。可惜，他們沒有孩子，撒迦利亞夫婦想有孩子，除非鐵樹開花，但是，有一天，天使告訴撒迦利亞，神回應了他們夫婦的祈禱，伊利莎白將要生一個孩子，並要取名叫約翰。",
+                explanationText: "成語「鐵樹開花」，鐵樹原產於熱帶，不常開花，若移植北方，往往多年才開一次花，所以，鐵樹開花比喻事物罕見或極難實現。",
+                example: "撒迦利亞夫婦年邁無子，這消息如同鐵樹開花般令人難以置信，卻真實應驗了神的應許。",
+                extraInfo: "https://youtu.be/V3EBvTDS_NE",
+                hintAudio: "soundeffects/NT002.mp3",
+                explanationAudio: "soundeffects/NT002_explanation.mp3",
+                correctAudio: "soundeffects/correct.mp3",
+                wrongAudio: "soundeffects/wrong.mp3"
+            },
+            {
+                image: "images/NT003.jpg",
+                correctAnswer: "甘之如飴",
+                explanationImage: "images/NT003_detail.jpg",
+                origin: "聖靈感孕（路1:26-36）天使告訴馬利亞她要懷孕生子，馬利亞仍未正式出嫁，因此感到十分驚慌。馬利亞未婚卻懷孕，誰會相信這件事？但是，她卻甘之如飴，信心堅定，並且願意服從上帝的旨意，深信上帝必看顧她，故欣然接受這個重任。",
+                explanationText: "成語「甘之如飴」，甘，即苦的東西，飴即麥芽糖，引申為甜的意思。用來形容人為了某種崇高的目標，心甘情願承受痛苦或犧牲。",
+                example: "馬利亞面對未婚懷孕的壓力仍甘之如飴，全心順服神的旨意。",
+                extraInfo: "https://youtu.be/itBlcTARw9I",
+                hintAudio: "soundeffects/NT003.mp3",
+                explanationAudio: "soundeffects/NT003_explanation.mp3",
+                correctAudio: "soundeffects/correct.mp3",
+                wrongAudio: "soundeffects/wrong.mp3"
+            },
+            {
+                image: "images/NT004.jpg",
+                correctAnswer: "千軍萬馬",
+                explanationImage: "images/NT004_detail.jpg",
+                origin: "天使報佳音（路2:1-21）耶穌在馬槽出生時，郊外有一班牧羊人。漆黑的夜空突然放光，天使像千軍萬馬般出現，向牧羊人報喜訊，牧羊人知道後，往伯利恆去見證耶穌基督。",
+                explanationText: "成語「千軍萬馬」原本形容兵馬眾多，現在常用來比喻聲勢浩大。",
+                example: "天使如千軍萬馬般顯現，向牧羊人宣告救主降生的好消息。",
+                extraInfo: "https://youtu.be/JqffoYhrez4",
+                hintAudio: "soundeffects/NT004.mp3",
+                explanationAudio: "soundeffects/NT004_explanation.mp3",
+                correctAudio: "soundeffects/correct.mp3",
+                wrongAudio: "soundeffects/wrong.mp3"
+            },
+            {
+                image: "images/NT005.jpg",
+                correctAnswer: "瑞氣祥雲",
+                explanationImage: "images/NT005_detail.jpg",
+                origin: "尋訪猶太王（太2:1-11）耶穌出生時，東方有幾個博士看到天上的星象，預告猶太人之王出世，博士看到瑞氣祥雲，便立刻起行，最後找到耶穌並送上禮物！",
+                explanationText: "成語「瑞氣祥雲」，瑞祥指吉祥的徵兆，古人看到美好的自然現象或奇禽異獸，例如美麗的雲彩，便相信將會有喜事降臨。",
+                example: "東方博士看見瑞氣祥雲般的星象，便知救世主已降生。",
+                extraInfo: "https://youtu.be/uH346U3l_ss",
+                hintAudio: "soundeffects/NT005.mp3",
+                explanationAudio: "soundeffects/NT005_explanation.mp3",
+                correctAudio: "soundeffects/correct.mp3",
+                wrongAudio: "soundeffects/wrong.mp3"
+            },
+            {
+                image: "images/NT006.jpg",
+                correctAnswer: "怒髮衝冠",
+                explanationImage: "images/NT006_detail.jpg",
+                origin: "下令屠殺男孩（太2:12-23）希律王聽見博士找猶太人之王時，已經感到不安，天使在夢中叫約瑟帶同妻兒，逃往埃及，希律得不到博士的消息，怒髮衝冠，下令將國內兩歲以下的男孩都殺死，為要殺死救主。",
+                explanationText: "成語「怒髮衝冠」，憤怒得頭髮直豎頂起帽子，即形容盛怒的樣子。",
+                example: "希律王怒髮衝冠，殘忍下令屠殺伯利恆的嬰孩。",
+                extraInfo: "https://youtu.be/L5HygBNIxik",
+                hintAudio: "soundeffects/NT006.mp3",
+                explanationAudio: "soundeffects/NT006_explanation.mp3",
+                correctAudio: "soundeffects/correct.mp3",
+                wrongAudio: "soundeffects/wrong.mp3"
+            },
+            {
+                image: "images/NT007.jpg",
+                correctAnswer: "對答如流",
+                explanationImage: "images/NT007_detail.jpg",
+                origin: "孩童耶穌（路2:41-52）耶穌十二歲的時候，他跟父母一同上耶路撒冷守節期，耶穌在殿裏，跟教師們坐在一起，而且跟教師們對答如流。最後，他的智慧和身量也不斷地成長，討神和人的喜悅。",
+                explanationText: "成語「對答如流」，形容回答問題像流水一樣順暢，表示反應敏捷，口才流利。",
+                example: "十二歲的耶穌在聖殿中與教師對答如流，顯出超凡智慧。",
+                extraInfo: "https://youtu.be/vPmFzKliMgw",
+                hintAudio: "soundeffects/NT007.mp3",
+                explanationAudio: "soundeffects/NT007_explanation.mp3",
+                correctAudio: "soundeffects/correct.mp3",
+                wrongAudio: "soundeffects/wrong.mp3"
+            },
+            {
+                image: "images/NT008.jpg",
+                correctAnswer: "開路先鋒",
+                explanationImage: "images/NT008_detail.jpg",
+                origin: "施洗約翰傳道（可1:1-9）撒迦利亞的兒子施洗約翰長大後，在曠野傳講悔改的信息，並且施行洗禮。施洗的舉動，吸引了各地很多人來到他面前認罪悔改，並接受水的洗禮。約翰卻說，將會有一位能力比他更大的出現，用聖靈為大家施行洗禮！",
+                explanationText: "成語「開路先鋒」原本指古代軍隊中先行開路和打頭陣的將領，現比喻某行動的先行者或領頭人。",
+                example: "施洗約翰作為開路先鋒，在曠野預備主的道。",
+                extraInfo: "https://youtu.be/FKRCREfUmPc",
+                hintAudio: "soundeffects/NT008.mp3",
+                explanationAudio: "soundeffects/NT008_explanation.mp3",
+                correctAudio: "soundeffects/correct.mp3",
+                wrongAudio: "soundeffects/wrong.mp3"
+            },
+            {
+                image: "images/NT009.jpg",
+                correctAnswer: "喜從天降",
+                explanationImage: "images/NT009_detail.jpg",
+                origin: "耶穌受洗（太3:13-17）施洗約翰在約旦河的時候，耶穌去接受他的施洗。當耶穌受洗後，有聖靈像鴿子般降在他身上，真是喜從天降！天上更有聲音說：「這是我的愛子，我所喜悅的。」",
+                explanationText: "成語「喜從天降」，形容意想不到的喜事突然來臨。",
+                example: "聖靈如鴿降臨，天父聲音傳來，真是喜從天降。",
+                extraInfo: "https://youtu.be/57voEg-ctA8",
+                hintAudio: "soundeffects/NT009.mp3",
+                explanationAudio: "soundeffects/NT009_explanation.mp3",
+                correctAudio: "soundeffects/correct.mp3",
+                wrongAudio: "soundeffects/wrong.mp3"
+            },
+            {
+                image: "images/NT010.jpg",
+                correctAnswer: "過關斬將",
+                explanationImage: "images/NT010_detail.jpg",
+                origin: "耶穌受試探（路4:1-13）耶穌離開約旦河後，聖靈將他帶到曠野，禁食禱告四十天。完成後，感到餓了，這時候，魔鬼出來試探他，耶穌面對魔鬼的試探，一路過關斬將，終於戰勝了魔鬼。魔鬼只好暫時離開，重新再找機會挑戰耶穌。",
+                explanationText: "成語「過關斬將」，比喻克服重重困難，戰勝各種對手。",
+                example: "耶穌面對魔鬼試探時過關斬將，完全得勝。",
+                extraInfo: "https://youtu.be/CqeSd_Cw9hk",
+                hintAudio: "soundeffects/NT010.mp3",
+                explanationAudio: "soundeffects/NT010_explanation.mp3",
+                correctAudio: "soundeffects/correct.mp3",
+                wrongAudio: "soundeffects/wrong.mp3"
+            },
+            {
+                image: "images/NT011.jpg",
+                correctAnswer: "招賢納士",
+                explanationImage: "images/NT011_detail.jpg",
+                origin: "呼召門徒（可1:16-20）耶穌來到加利利海邊，看見兩個漁夫，便對他們說：「來跟從我，我要叫你們得人如得魚一樣。」他們就立刻捨了網，跟從耶穌。聖經中的呼召，有揀選、委任、託付等意思。耶穌並不是按才幹來招賢納士，也不需要報名或面試，耶穌是按神的旨意呼召十二位學生，成為他的門徒！",
+                explanationText: "成語「招賢納士」，招：招收；賢：有德有才的人；納：接受；士：指讀書人。全句意思是指網羅人才。",
+                example: "耶穌不像世人招賢納士，而是按神旨意呼召門徒。",
+                extraInfo: "https://youtu.be/WA0B5D407qE",
+                hintAudio: "soundeffects/NT011.mp3",
+                explanationAudio: "soundeffects/NT011_explanation.mp3",
+                correctAudio: "soundeffects/correct.mp3",
+                wrongAudio: "soundeffects/wrong.mp3"
+            },
+            {
+                image: "images/NT012.jpg",
+                correctAnswer: "一鳴驚人",
+                explanationImage: "images/NT012_detail.jpg",
+                origin: "迦拿婚宴（約2:1-12）在加利利的迦拿有一個婚宴，在賓客正歡喜快樂之時，竟然沒有酒了！耶穌吩咐用人將六口水缸裝滿水，舀出來就成為上等美酒，挽救了這個危機。耶穌在迦拿婚宴一鳴驚人，將水變酒是他所行的第一個神蹟，顯出了他的榮耀！",
+                explanationText: "成語「一鳴驚人」是比喻平常沒有突出的表現，一下子做出驚人的成就。",
+                example: "耶穌在迦拿婚宴一鳴驚人，行出變水為酒的神蹟。",
+                extraInfo: "https://youtu.be/4vmDESRGQUk",
+                hintAudio: "soundeffects/NT012.mp3",
+                explanationAudio: "soundeffects/NT012_explanation.mp3",
+                correctAudio: "soundeffects/correct.mp3",
+                wrongAudio: "soundeffects/wrong.mp3"
+            },
+            {
+                image: "images/NT013.jpg",
+                correctAnswer: "撥亂反正",
+                explanationImage: "images/NT013_detail.jpg",
+                origin: "潔淨聖殿（約2:13-22）逾越節快到了，耶穌就上耶路撒冷去。當耶穌去到聖殿，竟然發現有人在那裏做買賣！聖殿是以色列人和神建立關係的重要地方，如今聖殿卻成為買賣之處，因此，耶穌為要撥亂反正，將做買賣的人趕出去，讓聖殿回復其功能！",
+                explanationText: "成語「撥亂反正」指整頓混亂局面，使秩序恢復正常，也指糾正錯誤，恢復正確的事理。",
+                example: "耶穌潔淨聖殿，撥亂反正，恢復敬拜的真義。",
+                extraInfo: "https://youtu.be/GZ_nFLjHQzI",
+                hintAudio: "soundeffects/NT013.mp3",
+                explanationAudio: "soundeffects/NT013_explanation.mp3",
+                correctAudio: "soundeffects/correct.mp3",
+                wrongAudio: "soundeffects/wrong.mp3"
+            },
+            {
+                image: "images/NT014.jpg",
+                correctAnswer: "返老還童",
+                explanationImage: "images/NT014_detail.jpg",
+                origin: "人如何重生（約3:1-21）有一個熟讀律法的人叫尼哥德慕，耶穌見到他後，跟他說：你要重生，才能看見神的國。尼哥德慕問耶穌如何能返老還童，怎能再進母親的肚中，重新生出來。原來耶穌的意思是人有罪，只有倚靠神的拯救和原諒，被聖靈改造，就有新的生命！",
+                explanationText: "成語「返老還童」，返：扭轉；還：恢復原來的狀態。指由衰老返回青春；形容老年人恢復了青春與活力，精神異常旺盛。",
+                example: "重生不是肉體返老還童，而是靈裡的新生。",
+                extraInfo: "https://youtu.be/MP_cpuWI3Ys",
+                hintAudio: "soundeffects/NT014.mp3",
+                explanationAudio: "soundeffects/NT014_explanation.mp3",
+                correctAudio: "soundeffects/correct.mp3",
+                wrongAudio: "soundeffects/wrong.mp3"
+            },
+            {
+                image: "images/NT015.jpg",
+                correctAnswer: "畫餅充饑",
+                explanationImage: "images/NT015_detail.jpg",
+                origin: "井水，活水（約4:1-42）耶穌經過撒馬利亞的時候，一個婦人正在打水。耶穌知道這婦人經過多次婚姻失敗，但她心中仍對真愛渴求，她渴望心中的空洞能被填滿。耶穌用了井水作比喻，指出人給予的，只是畫餅充饑，並不能填滿她的心。惟有得到從神而來的活水，她才能感到安全和滿足！",
+                explanationText: "成語「畫餅充饑」，指在紙上所畫之餅，只能看而不能吃。比喻徒具虛名，無實際益處。",
+                example: "世上的滿足如同畫餅充饑，唯有活水能真正解渴。",
+                extraInfo: "https://youtu.be/pro5zuXN8fg",
+                hintAudio: "soundeffects/NT015.mp3",
+                explanationAudio: "soundeffects/NT015_explanation.mp3",
+                correctAudio: "soundeffects/correct.mp3",
+                wrongAudio: "soundeffects/wrong.mp3"
+            },
+            {
+                image: "images/NT016.jpg",
+                correctAnswer: "心急如焚",
+                explanationImage: "images/NT016_detail.jpg",
+                origin: "醫好大臣兒子（約4:43-54）有一個大臣，可能是貴族或高官，來到耶穌面對，說：我的兒子快要死了，請你跟我回迦百農吧！從迦拿去迦百農，大約需要一天時間。耶穌卻對他說：回去吧，你的兒子已經好了！大臣相信耶穌的話，回到家的時候，僕人開心地迎接他，並說：你的兒子昨天已經康復了！",
+                explanationText: "成語「心急如焚」，指心裏急得像著了火一樣，形容非常焦急。",
+                example: "大臣因兒病危心急如焚，耶穌卻一句話就醫治。",
+                extraInfo: "https://youtu.be/UVUUDPW7U_I",
+                hintAudio: "soundeffects/NT016.mp3",
+                explanationAudio: "soundeffects/NT016_explanation.mp3",
+                correctAudio: "soundeffects/correct.mp3",
+                wrongAudio: "soundeffects/wrong.mp3"
+            },
+            {
+                image: "images/NT017.jpg",
+                correctAnswer: "水洩不通",
+                explanationImage: "images/NT017_detail.jpg",
+                origin: "治好癱子（可2:1-12）耶穌在迦百農的房屋內講道，有四人抬著四肢癱瘓的朋友找耶穌醫治。由於門前水洩不通，他們只能拆掉屋頂，將癱子連床褥吊下去見耶穌。耶穌看見他們的信心，便醫治了癱子，眾人看見都感到驚奇！",
+                explanationText: "成語「水洩不通」，洩：洩漏，意思是連一點水也無法流走，形容包圍得極為嚴密或非常擠迫。",
+                example: "眾人圍繞使屋內水洩不通，朋友仍拆頂求醫治。",
+                extraInfo: "https://youtu.be/ekQkGcQZmLo",
+                hintAudio: "soundeffects/NT017.mp3",
+                explanationAudio: "soundeffects/NT017_explanation.mp3",
+                correctAudio: "soundeffects/correct.mp3",
+                wrongAudio: "soundeffects/wrong.mp3"
+            },
+            {
+                image: "images/NT018.jpg",
+                correctAnswer: "先苦後甜",
+                explanationImage: "images/NT018_detail.jpg",
+                origin: "八福（太5:3-12）耶穌講八福的目的，是向人宣告天國要來，救主要來到了。大家聽了八福，就要照著去行，別指望不勞而獲，並且講明為義受逼迫的人有福了，預告了會先苦後甜。大家倚靠耶穌，活出八福的教導，即是天國子民應有的樣式，便為有福。",
+                explanationText: "成語「先苦後甜」，意思是指先經歷苦難，然後過上幸福的日子。",
+                example: "跟從耶穌雖先苦後甜，天國賞賜卻永遠長存。",
+                extraInfo: "https://youtu.be/DwPv0chSVmo",
+                hintAudio: "soundeffects/NT018.mp3",
+                explanationAudio: "soundeffects/NT018_explanation.mp3",
+                correctAudio: "soundeffects/correct.mp3",
+                wrongAudio: "soundeffects/wrong.mp3"
+            },
+            {
+                image: "images/NT019.jpg",
+                correctAnswer: "功敗垂成",
+                explanationImage: "images/NT019_detail.jpg",
+                origin: "鹽和光（太5:13-16）耶穌又用鹽和光來作比喻，鹽和光本身有其能力及功用，但是，若沒有發揮出來，便會功敗垂成，何等可惜！鹽有影響及改變的能力，能改變社會，甚至世界。燈塔的光，能指引正路，也能照亮人的心，讓人看見基督徒的好行為，將榮耀歸給耶穌。",
+                explanationText: "成語「功敗垂成」，垂：將近的意思，指事情接近成功的時候卻遇到了失敗；多用於形容事業將要成功時失敗，含有惋惜之意。",
+                example: "基督徒若失去見證，便功敗垂成，失去價值。",
+                extraInfo: "https://youtu.be/leZyssi8CIk",
+                hintAudio: "soundeffects/NT019.mp3",
+                explanationAudio: "soundeffects/NT019_explanation.mp3",
+                correctAudio: "soundeffects/correct.mp3",
+                wrongAudio: "soundeffects/wrong.mp3"
+            },
+            {
+                image: "images/NT020.jpg",
+                correctAnswer: "應有盡有",
+                explanationImage: "images/NT020_detail.jpg",
+                origin: "主禱文（太6:9-15）我們禱告的時候，常常只會為需要而求，因此，耶穌為我們做了一個示範，教我們如何向神禱告。主禱文的內容可說是應有盡有，短短幾句，就能讓我們清楚神的身分，我們應求甚麼，神會如何照顧我們所需，我們當作甚麼等等。",
+                explanationText: "成語「應有盡有」，意思是應該有的都有，形容十分齊備。",
+                example: "基督徒若失去見證，便功敗垂成，失去價值。",
+                extraInfo: "https://youtu.be/pODAnRLmONo",
+                hintAudio: "soundeffects/NT020.mp3",
+                explanationAudio: "soundeffects/NT020_explanation.mp3",
+                correctAudio: "soundeffects/correct.mp3",
+                wrongAudio: "soundeffects/wrong.mp3"
+            }
+        ];
+
+        // 成語池（用於生成選項）
+        const idiomPool = [
+            "重見天日", "鐵樹開花", "甘之如飴", "千軍萬馬", 
+            "瑞氣祥雲", "怒髮衝冠", "對答如流", "開路先鋒",
+            "喜從天降", "過關斬將", "招賢納士", "一鳴驚人",
+            "撥亂反正", "返老還童", "畫餅充饑", "心急如焚",
+            "水洩不通", "先苦後甜", "功敗垂成", "應有盡有",
+            "易如反掌", "蜻蜓點水", "魚目混珠", "呼風喚雨", 
+            "信口開河", "堆積如山", "戰戰兢兢", "盲人摸象",
+            "紆尊降貴", "難如登天", "陽奉陰違", "鞠躬盡瘁",
+            "無微不至", "捨己為人", "雞飛蛋打", "失而復得", 
+            "充耳不聞", "起死回生", "愚公移山", "痛改前非", 
+            "天壤之別", "狼心狗肺", "不遺餘力", "以假亂真",
+            "措手不及", "膾炙人口", "凶多吉少", "斬釘截鐵", 
+            "心甘情願", "裏應外合", "子虛烏有", "貪生怕死",
+            "置身事外", "弄假成真", "迷途知返", "迎刃而解", 
+            "驚天動地", "如夢初醒", "眼見為實", "任重道遠"
+        ];
+
+        // 遊戲狀態
+        let currentQuestion = 0;
+        let score = 0;
+        let audio = null;
+        let isAudioPlaying = false;
+        let currentAudioBtn = null;
+        
+        // DOM元素
+        const coverScreen = document.getElementById('cover-screen');
+        const questionScreen = document.getElementById('question-screen');
+        const explanationScreen = document.getElementById('explanation-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const startBtn = document.getElementById('start-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const questionImage = document.getElementById('question-image');
+        const optionsContainer = document.getElementById('options-container');
+        const hintBtn = document.getElementById('hint-btn');
+        const correctAnswerTitle = document.getElementById('correct-answer-title');
+        const explanationImage = document.getElementById('explanation-image');
+        const explanationText = document.getElementById('explanation-text');
+        const explanationAudioBtn = document.getElementById('explanation-audio-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const scoreDisplay = document.querySelector('#score');
+        const totalQuestionsDisplay = document.querySelector('#total-questions');
+        const explanationScoreDisplay = document.querySelector('#explanation-score');
+        const explanationTotalDisplay = document.querySelector('#explanation-total');
+        const finalScoreDisplay = document.getElementById('final-score');
+        const finalTotalDisplay = document.getElementById('final-total');
+        const resultMessage = document.getElementById('result-message');
+        
+        // 初始化遊戲
+        function initGame() {
+            currentQuestion = 0;
+            score = 0;
+            updateScoreDisplay();
+            showCover();
+        }
+        
+        // 顯示封面
+        function showCover() {
+            stopAudio();
+            coverScreen.style.display = 'block';
+            questionScreen.style.display = 'none';
+            explanationScreen.style.display = 'none';
+            resultScreen.style.display = 'none';
+        }
+        
+        // 開始遊戲
+        function startGame() {
+            coverScreen.style.display = 'none';
+            resultScreen.style.display = 'none';
+            loadQuestion(currentQuestion);
+        }
+        
+        // 停止當前音頻
+        function stopAudio() {
+            if (audio) {
+                audio.pause();
+                audio.currentTime = 0;
+                audio = null;
+            }
+            isAudioPlaying = false;
+            if (currentAudioBtn) {
+                currentAudioBtn.classList.remove('playing');
+                const icon = currentAudioBtn === hintBtn ? '提示' : '聖經相關';
+                currentAudioBtn.innerHTML = `<span class="audio-icon">🔊</span> ${icon}`;
+                currentAudioBtn = null;
+            }
+        }
+        
+        // 播放音效（用於答對/答錯音效）
+        function playSoundEffect(audioUrl) {
+            stopAudio();
+            audio = new Audio(audioUrl);
+            audio.play().catch(e => console.error("音效播放失敗:", e));
+            
+            audio.onended = () => {
+                isAudioPlaying = false;
+            };
+        }
+        
+        // 播放/暫停音頻（用於提示和解釋音頻）
+        function toggleAudio(audioUrl, button) {
+            // 如果點擊的是當前正在播放的音頻按鈕
+            if (currentAudioBtn === button && isAudioPlaying) {
+                stopAudio();
+                return;
+            }
+            
+            // 停止其他音頻
+            stopAudio();
+            
+            // 設置新的音頻
+            audio = new Audio(audioUrl);
+            currentAudioBtn = button;
+            
+            // 播放音頻
+            audio.play().catch(e => console.error("音頻播放失敗:", e));
+            isAudioPlaying = true;
+            button.classList.add('playing');
+            const icon = button === hintBtn ? '提示' : '聖經相關';
+            button.innerHTML = `<span class="audio-icon">⏸</span> 暫停${icon}`;
+            
+            // 音頻結束時重置按鈕狀態
+            audio.onended = () => {
+                button.classList.remove('playing');
+                button.innerHTML = `<span class="audio-icon">🔊</span> 播放${icon}`;
+                isAudioPlaying = false;
+                currentAudioBtn = null;
+            };
+        }
+        
+        // 更新分數顯示
+        function updateScoreDisplay() {
+            scoreDisplay.textContent = score;
+            totalQuestionsDisplay.textContent = idioms.length;
+            explanationScoreDisplay.textContent = score;
+            explanationTotalDisplay.textContent = idioms.length;
+        }
+        
+        // 從成語池中隨機選擇3個錯誤選項（排除正確答案）
+        function getRandomOptions(correctAnswer) {
+            // 複製成語池並移除正確答案
+            const poolWithoutCorrect = idiomPool.filter(idiom => idiom !== correctAnswer);
+            
+            // 洗牌
+            const shuffledPool = shuffleArray([...poolWithoutCorrect]);
+            
+            // 取前3個作為錯誤選項
+            const wrongOptions = shuffledPool.slice(0, 3);
+            
+            // 加入正確答案
+            const allOptions = [...wrongOptions, correctAnswer];
+            
+            // 再次洗牌
+            return shuffleArray(allOptions);
+        }
+        
+        // 載入問題
+        function loadQuestion(index) {
+            // 停止任何正在播放的音頻
+            stopAudio();
+            
+            if (index >= idioms.length) {
+                // 遊戲結束，顯示結果
+                showResult();
+                return;
+            }
+            
+            const question = idioms[index];
+            
+            // 設置問題圖片
+            questionImage.src = question.image;
+            questionImage.alt = `成語圖片 ${index + 1}`;
+            
+            // 清空選項容器
+            optionsContainer.innerHTML = '';
+            
+            // 從成語池中隨機生成選項
+            const options = getRandomOptions(question.correctAnswer);
+            
+            // 添加選項按鈕
+            options.forEach(option => {
+                const button = document.createElement('button');
+                button.className = 'option-btn';
+                button.textContent = option;
+                button.addEventListener('click', () => checkAnswer(option, question.correctAnswer, question));
+                optionsContainer.appendChild(button);
+            });
+            
+            // 設置提示音效按鈕
+            hintBtn.onclick = function() {
+                toggleAudio(question.hintAudio, hintBtn);
+            };
+            
+            // 更新分數顯示
+            updateScoreDisplay();
+            
+            // 顯示問題屏幕，隱藏其他屏幕
+            questionScreen.style.display = 'block';
+            explanationScreen.style.display = 'none';
+            resultScreen.style.display = 'none';
+        }
+        
+        // 檢查答案
+        function checkAnswer(selectedAnswer, correctAnswer, question) {
+            const buttons = document.querySelectorAll('.option-btn');
+            let isCorrect = false;
+            
+            // 播放答對或答錯音效
+            if (selectedAnswer === correctAnswer) {
+                playSoundEffect(question.correctAudio);
+                isCorrect = true;
+                score++;
+                updateScoreDisplay();
+            } else {
+                playSoundEffect(question.wrongAudio);
+            }
+            
+            buttons.forEach(button => {
+                if (button.textContent === correctAnswer) {
+                    button.classList.add('correct');
+                }
+                
+                if (button.textContent === selectedAnswer && selectedAnswer !== correctAnswer) {
+                    button.classList.add('incorrect');
+                }
+                
+                button.disabled = true;
+            });
+            
+            // 顯示解釋屏幕
+            setTimeout(() => showExplanation(currentQuestion, isCorrect), 1000);
+        }
+        
+        // 顯示解釋
+        function showExplanation(index, isCorrect) {
+            const question = idioms[index];
+            
+            // 設置解釋內容
+            correctAnswerTitle.textContent = isCorrect ? '答對了！' : '答錯了！';
+            explanationImage.src = question.explanationImage;
+            explanationImage.alt = `${question.correctAnswer} 解釋圖片`;
+            
+            // 處理影片連結
+            let videoContent = '<p>暫無相關影片</p>';
+            if (question.extraInfo && question.extraInfo.startsWith('http')) {
+                videoContent = `
+                    <p>觀看相關影片: 
+                        <a href="${question.extraInfo}" target="_blank" class="video-link">
+                            點擊這裡觀看
+                        </a>
+                    </p>
+                `;
+            }
+            
+            // 結構化的解釋文本
+            explanationText.innerHTML = `
+                <div class="explanation-content">
+                    <h3>${question.correctAnswer}</h3>
+                    
+                    <div class="subtitle">💡 成語解釋</div>
+                    <p>${question.explanationText}</p>
+                    
+                    <div class="subtitle">✍️ 例句示範</div>
+                    <p>${question.example || '例：這個成語可以用來形容...'}</p>
+                    
+                    <div class="subtitle">📖 聖經相關</div>
+                    <p>${question.origin || '此成語出自古代典籍，具體出處已不可考。'}</p>
+                    
+                    <div class="subtitle">🎞️ 影片</div>
+                    ${videoContent}
+                </div>
+            `;
+            
+            // 設置解釋音效按鈕
+            explanationAudioBtn.onclick = () => {
+                toggleAudio(question.explanationAudio, explanationAudioBtn);
+            };
+            
+            // 更新分數顯示
+            updateScoreDisplay();
+            
+            // 顯示解釋屏幕，隱藏問題屏幕
+            questionScreen.style.display = 'none';
+            explanationScreen.style.display = 'block';
+            resultScreen.style.display = 'none';
+        }
+        
+        // 顯示結果
+        function showResult() {
+            finalScoreDisplay.textContent = score;
+            finalTotalDisplay.textContent = idioms.length;
+            
+            // 根據分數設置不同的結果消息
+            const percentage = (score / idioms.length) * 100;
+            if (percentage >= 80) {
+                resultMessage.textContent = "太棒了！你是成語大師！";
+            } else if (percentage >= 50) {
+                resultMessage.textContent = "做得不錯！繼續努力學習更多成語！";
+            } else {
+                resultMessage.textContent = "再接再厲！多練習會越來越好的！";
+            }
+            
+            // 顯示結果屏幕，隱藏其他屏幕
+            questionScreen.style.display = 'none';
+            explanationScreen.style.display = 'none';
+            resultScreen.style.display = 'block';
+        }
+        
+        // Fisher-Yates洗牌算法
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+        
+        // 事件監聽器
+        startBtn.addEventListener('click', startGame);
+        nextBtn.addEventListener('click', () => {
+            currentQuestion++;
+            loadQuestion(currentQuestion);
+        });
+        restartBtn.addEventListener('click', initGame);
+        
+        // 初始化遊戲
+        initGame();
+    </script>
+</body>
+</html>
